@@ -1,0 +1,29 @@
+name: Build AltunHub Setup
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: "src-tauri" }
+      - run: npm install
+      - run: npx tauri icon app-icon.png
+      - run: npx tauri build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AltunHub-Setup
+          path: src-tauri/target/release/bundle/nsis/*.exe
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src-tauri/target/release/bundle/nsis/*.exe
