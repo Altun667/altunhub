@@ -17,13 +17,13 @@ aside{background:var(--panel);border-right:1px solid var(--line);padding:18px 12
 .nav{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;color:var(--mut);font-size:14px;display:flex;justify-content:space-between}
 .nav:hover{background:var(--panel2);color:var(--text)}
 .nav.on{background:var(--panel2);color:var(--gold);font-weight:600}
-.sp{flex:1}
+.sp{flex:1}.logo img{width:28px;height:28px;border-radius:8px;vertical-align:-7px;margin-right:8px}
 main{padding:20px 24px;min-width:0}
 .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .search{flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;outline:none}
 .search:focus{border-color:var(--gold)}
 .btn{background:var(--gold);color:#1a1405;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px}
-.btn.ghost{background:var(--panel2);color:var(--text);font-weight:500}
+.btn[disabled]{opacity:.5;cursor:default}.btn.ghost{background:var(--panel2);color:var(--text);font-weight:500}
 .banner{background:linear-gradient(90deg,rgba(240,180,41,.18),transparent);border:1px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 h2{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin:0 0 10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
@@ -65,100 +65,171 @@ dialog input,dialog select{width:100%;background:var(--panel2);border:1px solid 
 </div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept="image/*" hidden>
-<dialog id="ldlg"><b>Profil linkini ayarla</b>
-  <label>Link</label><input id="lu" placeholder="https://youtube.com/@kanalın">
-  <div class="acts" style="margin-top:16px"><button class="btn ghost" id="lcancel">Vazgeç</button><button class="btn" id="lsave">Kaydet</button></div></dialog>
 <dialog id="dlg">
   <b>Uygulama / Oyun Ekle</b>
   <label>Ad</label><input id="n">
   <label>Yol (.exe veya kısayol)</label><input id="p" placeholder="C:\Program Files\..."><button class="btn ghost" id="browse" type="button" style="display:none;margin-top:6px">Gözat…</button>
   <label>Kategori</label>
-  <select id="c"><option>Oyunlar</option><option>Programlar</option><option>Altun</option></select>
+  <select id="c"><option>Oyunlar</option><option>Programlar</option></select>
   <div class="acts" style="margin-top:16px"><button class="btn ghost" id="cancel">Vazgeç</button><button class="btn" id="save">Kaydet</button></div>
 </dialog>
 <script>
-const KEY="altunhub.apps.v3";
-const DEF=[
- {id:1,name:"AltunDP",icon:"🟡",cat:"Altun",ver:"1.2.0",latest:"1.3.0",fav:true,path:"C:\\Altun\\AltunDP.exe"},
- {id:2,name:"AltunCleaner",icon:"🧹",cat:"Altun",ver:"1.0.0",latest:"1.0.0",fav:true,path:"C:\\Altun\\AltunCleaner.exe"},
- {id:7,name:"AltunCore",icon:"🔶",cat:"Altun",ver:"0.1.0",latest:"0.1.0",fav:true,path:"C:\\Altun\\AltunCore.exe"},
- {id:8,name:"YouTube",icon:"▶️",cat:"Sosyal",fav:false,url:"https://youtube.com"},
- {id:9,name:"Instagram",icon:"📸",cat:"Sosyal",fav:false,url:"https://instagram.com"},
- {id:10,name:"TikTok",icon:"🎵",cat:"Sosyal",fav:false,url:"https://tiktok.com"},
- {id:3,name:"Steam",icon:"🎮",cat:"Oyunlar",fav:true,path:"C:\\Steam\\steam.exe"},
- {id:4,name:"Minecraft",icon:"⛏️",cat:"Oyunlar",fav:false,path:"C:\\Games\\Minecraft.exe"},
- {id:5,name:"VS Code",icon:"💻",cat:"Programlar",fav:true,path:"C:\\Code\\Code.exe"},
- {id:6,name:"Chrome",icon:"🌐",cat:"Programlar",fav:false,path:"C:\\Chrome\\chrome.exe"}
+const KEY="altunhub.user.v5";
+const REMOTE="https://raw.githubusercontent.com/Altun667/altunhub/main/apps.json";
+const HUB={id:"hub",name:"AltunHub",repo:"Altun667/altunhub"};
+const BUILTIN=[
+ {id:"altundp",name:"AltunDP",icon:"icons/altundp.png",cat:"Altun",repo:"Altun667/AltunDp-",exe:"AltunDP.exe",fav:true,cand:["%LOCALAPPDATA%\\Programs\\AltunDP\\AltunDP.exe","%ProgramFiles%\\AltunDP\\AltunDP.exe"]},
+ {id:"altunspace",name:"AltunSpace",icon:"icons/altunspace.png",cat:"Altun",repo:"Altun667/AltunSpace",exe:"AltunSpace.exe",fav:true,cand:["%LOCALAPPDATA%\\Programs\\AltunSpace\\AltunSpace.exe","%ProgramFiles%\\AltunSpace\\AltunSpace.exe"]},
+ {id:"altuncpu",name:"AltunCPU",icon:"icons/altuncpu.png",cat:"Altun",repo:"Altun667/AltunCpu",exe:"AltunCPU.exe",fav:true,cand:["%LOCALAPPDATA%\\Programs\\AltunCPU\\AltunCPU.exe","%ProgramFiles%\\AltunCPU\\AltunCPU.exe"]},
+ {id:"altuncore",name:"AltunCore",icon:"⚙️",cat:"Altun",soon:true},
+ {id:"web",name:"Web Sitem",icon:"🌐",cat:"Sosyal",url:"https://altun67.netlify.app/"},
+ {id:"yt",name:"YouTube",icon:"▶️",cat:"Sosyal",url:"https://www.youtube.com/@Altun67"},
+ {id:"ig",name:"Instagram",icon:"📸",cat:"Sosyal",url:"https://www.instagram.com/altunn_67/"},
+ {id:"tt",name:"TikTok",icon:"🎵",cat:"Sosyal",url:"https://www.tiktok.com/@altunn_67"}
 ];
-let apps=DEF,cat="Tümü";
-try{const s=localStorage.getItem(KEY);if(s)apps=JSON.parse(s)}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(apps))}catch(e){}};
 const $=id=>document.getElementById(id);
+const T=()=>window.__TAURI__;
+const inv=(c,a)=>T().core.invoke(c,a);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S={fav:{},paths:{},icons:{},inst:{},custom:[]};
+try{const s=localStorage.getItem(KEY);if(s)S={...S,...JSON.parse(s)}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let base=BUILTIN.slice(),F={},LAT={},BUSY={},HUBVER="",cat="Tümü",editId=null,pick=null;
+function mergeRemote(list){if(!Array.isArray(list))return;list.forEach(x=>{if(!x||!x.id)return;const i=base.findIndex(b=>b.id===x.id);if(i>=0)base[i]={...base[i],...x};else base.push(x)})}
+try{const r=localStorage.getItem("altunhub.remote");if(r)mergeRemote(JSON.parse(r))}catch(e){}
+try{const l=localStorage.getItem("altunhub.latest");if(l)LAT=JSON.parse(l)||{}}catch(e){}
+const favOf=o=>S.fav[o.id]!==undefined?S.fav[o.id]:!!o.fav;
+const all=()=>[
+ ...base.map(b=>({...b,fav:favOf(b),icon:S.icons[b.id]||b.icon,path:S.paths[b.id]||"",dl:b.repo?"https://github.com/"+b.repo+"/releases/latest":""})),
+ ...S.custom.map(c=>({...c,custom:true,fav:favOf(c),icon:S.icons[c.id]||c.icon}))];
+const isExt=a=>!a.custom&&!!a.repo;
 const cats=["Tümü","Favoriler","Altun","Sosyal","Oyunlar","Programlar"];
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("show"),2200)}
-const upd=a=>a.latest&&a.latest!==a.ver;
+const vnum=t=>(String(t||"").match(/\d+/g)||[]).map(Number);
+function newer(a,b){const x=vnum(a),y=vnum(b);for(let i=0;i<Math.max(x.length,y.length);i++){const p=x[i]||0,q=y[i]||0;if(p!==q)return p>q}return false}
+const hasUpdate=a=>!!(LAT[a.id]&&F[a.id]&&S.inst[a.id]&&newer(LAT[a.id].tag,S.inst[a.id]));
+const hubUpd=()=>!!(LAT.hub&&HUBVER&&newer(LAT.hub.tag,HUBVER));
+function pickAsset(as){const ok=(as||[]).filter(x=>/\.(exe|msi|zip)$/i.test(x.name));
+ return ok.find(x=>/setup|install|kurulum/i.test(x.name)&&/\.(exe|msi)$/i.test(x.name))||ok.find(x=>/\.exe$/i.test(x.name))||ok.find(x=>/\.msi$/i.test(x.name))||ok[0]||null}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("show"),3200)}
+function launch(p,n){inv("launch",{path:p||""}).then(()=>toast("🚀 "+n+" başlatılıyor…")).catch(e=>toast("⚠️ "+e))}
+function openUrl(u){T()?inv("open_url",{url:u}).catch(e=>toast("⚠️ "+e)):window.open(u,"_blank","noopener")}
+function settle(){let ch=false;for(const a of all().filter(isExt)){if(F[a.id]&&!S.inst[a.id]&&LAT[a.id]){S.inst[a.id]=LAT[a.id].tag;ch=true}}if(ch)save()}
+async function refresh(){
+  if(T()){for(const a of all().filter(isExt)){
+    const m=a.exe?"%LOCALAPPDATA%\\AltunHub\\apps\\"+a.id+"\\"+a.exe:"";
+    try{F[a.id]=await inv("find_app",{paths:[a.path,m,...(a.cand||[])].filter(Boolean)})}catch(e){F[a.id]=null}}}
+  settle();render();
+}
+async function fetchLatest(repo){
+  const r=await fetch("https://api.github.com/repos/"+repo+"/releases/latest",{headers:{Accept:"application/vnd.github+json"}});
+  if(!r.ok)throw new Error(r.status);const j=await r.json();
+  return {tag:j.tag_name,url:j.html_url,assets:(j.assets||[]).map(x=>({name:x.name,url:x.browser_download_url}))};
+}
+async function loadLatest(){
+  const items=[...base.filter(b=>b.repo),HUB];
+  await Promise.all(items.map(async b=>{try{LAT[b.id]=await fetchLatest(b.repo)}catch(e){}}));
+  try{localStorage.setItem("altunhub.latest",JSON.stringify(LAT))}catch(e){}
+  settle();render();
+}
+async function loadRemote(){try{const r=await fetch(REMOTE+"?t="+Date.now());if(!r.ok)return;const j=await r.json();try{localStorage.setItem("altunhub.remote",JSON.stringify(j))}catch(e){}mergeRemote(j);await refresh();loadLatest()}catch(e){}}
+async function install(a){
+  const L=LAT[a.id];
+  if(!L){openUrl(a.dl);return}
+  const as=pickAsset(L.assets);
+  if(!as){openUrl(L.url);toast("ℹ️ Bu sürümde indirilebilir dosya yok, sürüm sayfası açıldı");return}
+  if(!T()){openUrl(as.url);return}
+  BUSY[a.id]=true;render();toast("⬇️ "+a.name+" indiriliyor…");
+  try{
+    const r=await inv("install_app",{id:a.id,url:as.url,name:as.name,exe:a.exe||""});
+    S.inst[a.id]=L.tag;if(r.kind==="portable"&&r.path)S.paths[a.id]=r.path;save();
+    toast(r.kind==="installer"?"🛠️ Kurulum başlatıldı, bitince buraya dön":"✅ "+a.name+" "+L.tag+" hazır");
+    if(a.id==="hub")setTimeout(()=>inv("exit_app"),1500);
+  }catch(e){toast("⚠️ "+e+" (uygulama açıksa kapatıp tekrar dene)")}
+  BUSY[a.id]=false;await refresh();
+}
+function meta(a){
+  if(a.cat==="Sosyal"){try{return esc(new URL(a.url).host.replace(/^www\./,""))}catch(e){return "Sosyal"}}
+  if(a.soon)return "Yakında";
+  if(isExt(a)){const L=LAT[a.id];
+    if(!F[a.id])return L?esc(L.tag)+" · Kurulu değil":"Kurulu değil";
+    return hasUpdate(a)?esc(S.inst[a.id])+" → "+esc(L.tag):"Kurulu · "+esc(S.inst[a.id]||"")}
+  return esc(a.cat);
+}
+function actions(a){
+  const id=esc(a.id),ed=`<button class="x ed" data-e="${id}" title="Yolu düzenle">✎</button>`;
+  if(a.cat==="Sosyal")return `<button class="btn" data-o="${id}">Aç</button>`;
+  if(a.soon)return `<button class="btn ghost" disabled>Yakında</button>`;
+  if(isExt(a)){
+    if(BUSY[a.id])return `<button class="btn" disabled>İndiriliyor…</button>`;
+    if(!F[a.id])return `<button class="btn" data-up="${id}">${LAT[a.id]?"İndir":"Sürümler"}</button>`+ed;
+    return `<button class="btn" data-o="${id}">Aç</button>`+(hasUpdate(a)?`<button class="btn ghost" data-up="${id}">Güncelle</button>`:"")+ed;
+  }
+  return `<button class="btn" data-o="${id}">Aç</button>`+ed+`<button class="x" data-d="${id}">✕</button>`;
+}
+function banner(){
+  let h="";
+  if(hubUpd())h+=`<div class="banner">🔔 AltunHub'ın yeni sürümü var (${esc(LAT.hub.tag)}) <button class="btn" style="padding:4px 12px;margin-left:8px" data-hub="1">Güncelle</button></div>`;
+  const u=all().filter(a=>isExt(a)&&hasUpdate(a));
+  if(u.length)h+=`<div class="banner">🔔 Güncelleme var: ${u.map(a=>esc(a.name)+" "+esc(LAT[a.id].tag)).join(", ")}</div>`;
+  return h;
+}
 function render(){
-  const q=$("q").value.toLowerCase();
-  $("side").innerHTML='<div class="logo">⬡ AltunHub</div>'+cats.map(c=>{
-    const n=c==="Tümü"?apps.length:c==="Favoriler"?apps.filter(a=>a.fav).length:apps.filter(a=>a.cat===c).length;
+  const q=$("q").value.toLowerCase(),list0=all();
+  $("side").innerHTML='<div class="logo"><img src="icons/hub.png" alt="">AltunHub</div>'+cats.map(c=>{
+    const n=c==="Tümü"?list0.length:c==="Favoriler"?list0.filter(a=>a.fav).length:list0.filter(a=>a.cat===c).length;
     return `<button class="nav ${c===cat?"on":""}" data-c="${c}"><span>${c}</span><span>${n}</span></button>`}).join("")+
     '<div class="sp"></div><button class="nav" id="theme">🌓 Tema</button>';
-  const list=apps.filter(a=>(cat==="Tümü"||(cat==="Favoriler"?a.fav:a.cat===cat))&&a.name.toLowerCase().includes(q));
-  $("title").textContent=cat;
-  const u=apps.filter(upd);
-  $("banner").innerHTML=u.length?`<div class="banner">🔔 ${u.length} güncelleme var: ${u.map(a=>esc(a.name)+" "+a.latest).join(", ")}</div>`:"";
+  $("title").textContent=cat;$("banner").innerHTML=banner();
+  const list=list0.filter(a=>(cat==="Tümü"||(cat==="Favoriler"?a.fav:a.cat===cat))&&a.name.toLowerCase().includes(q));
   $("grid").innerHTML=list.length?list.map(a=>`<div class="card">
-    <div class="row"><div class="ico" data-i="${a.id}" title="İkonu değiştir">${a.icon.startsWith("data:")?'<img src="'+a.icon+'">':a.icon}</div><div><div class="nm">${esc(a.name)}</div><div class="meta">${a.cat==="Sosyal"?(a.url?esc(a.url.replace(/^https?:\/\/(www\.)?/,"").slice(0,28)):"Link ekle"):a.cat+(a.ver?" · v"+a.ver:"")}</div></div>
-    <button class="star ${a.fav?"on":""}" data-f="${a.id}">★</button></div>
-    ${upd(a)?'<span class="badge" style="align-self:flex-start">Güncelleme '+a.latest+'</span>':""}
-    <div class="acts"><button class="btn" data-o="${a.id}">Aç</button>${upd(a)?`<button class="btn ghost" data-u="${a.id}">Güncelle</button>`:""}${a.cat==="Sosyal"?`<button class="btn ghost" data-l="${a.id}">Link</button>`:""}${a.cat!=="Sosyal"?`<button class="x ed" data-e="${a.id}" title="Yolu düzenle">✎</button>`:""}<button class="x" data-d="${a.id}">✕</button></div></div>`).join(""):'<div class="empty">Burada henüz bir şey yok.</div>';
+    <div class="row"><div class="ico" data-i="${esc(a.id)}" title="İkonu değiştir">${/^(data:image\/|icons\/)/.test(String(a.icon))?'<img src="'+esc(a.icon)+'">':esc(a.icon)}</div>
+    <div><div class="nm">${esc(a.name)}</div><div class="meta">${meta(a)}</div></div>
+    <button class="star ${a.fav?"on":""}" data-f="${esc(a.id)}">★</button></div>
+    ${isExt(a)&&hasUpdate(a)?'<span class="badge" style="align-self:flex-start">Güncelleme var</span>':""}
+    <div class="acts">${actions(a)}</div></div>`).join(""):'<div class="empty">Burada henüz bir şey yok. “+ Ekle” ile oyun veya program ekleyebilirsin.</div>';
+}
+function act(a){
+  if(a.cat==="Sosyal"){openUrl(a.url);return}
+  if(isExt(a)){const p=F[a.id];if(p&&T())launch(p,a.name);else openUrl(a.dl);return}
+  if(T())launch(a.path,a.name);else toast("🚀 "+a.name+" (demo: masaüstü sürümünde gerçek açılır)");
 }
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
-  const d=t.dataset,find=i=>apps.find(a=>a.id==i);
-  if(d.c){cat=d.c}
-  else if(d.f){const a=find(d.f);a.fav=!a.fav;save()}
-  else if(d.e){const a=find(d.e);editId=a.id;$("n").value=a.name;$("p").value=a.path||"";$("c").value=a.cat;$("dlg").showModal();return}
-  else if(d.l){linkId=d.l;$("lu").value=find(d.l).url||"";$("ldlg").showModal();return}
-  else if(d.o){const a=find(d.o);if(a.cat==="Sosyal"){if(a.url){openUrl(a.url)}else{linkId=a.id;$("lu").value="";$("ldlg").showModal();return}}else{if(window.__TAURI__)launch(a);else toast("🚀 "+a.name+" (demo: masaüstü sürümünde gerçek .exe açılır)")}}
-  else if(d.u){const a=find(d.u);a.ver=a.latest;save();toast("✅ "+a.name+" "+a.ver+" sürümüne güncellendi")}
-  else if(d.d){apps=apps.filter(a=>a.id!=d.d);save()}
+  const d=t.dataset,find=i=>all().find(a=>a.id===i);
+  if(d.c)cat=d.c;
+  else if(d.f){const a=find(d.f);S.fav[d.f]=!a.fav;save()}
+  else if(d.o){act(find(d.o));return}
+  else if(d.up){install(find(d.up));return}
+  else if(d.hub){install({...HUB,dl:"https://github.com/"+HUB.repo+"/releases/latest"});return}
+  else if(d.e){const a=find(d.e);editId=a.id;$("n").value=a.name;$("n").disabled=!a.custom;$("p").value=a.path||"";$("c").value=a.custom?a.cat:"Programlar";$("c").disabled=!a.custom;$("dlg").showModal();return}
+  else if(d.d){S.custom=S.custom.filter(a=>a.id!==d.d);save()}
   else if(t.id==="theme"){const r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";r.dataset.theme=dark?"light":"dark"}
   render();
 });
 $("q").addEventListener("input",render);
 addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("q").focus()}});
-$("add").onclick=()=>{editId=null;$("n").value=$("p").value="";$("dlg").showModal()};
-$("cancel").onclick=()=>$("dlg").close();
-let pick=null,linkId=null,editId=null;
-function launch(a){window.__TAURI__.core.invoke("launch",{path:a.path||""}).then(()=>toast("🚀 "+a.name+" başlatılıyor…")).catch(e=>toast("⚠️ "+e))}
-function openUrl(u){window.__TAURI__?window.__TAURI__.core.invoke("open_url",{url:u}).catch(e=>toast("⚠️ "+e)):window.open(u,"_blank","noopener")}
-if(window.__TAURI__){$("browse").style.display="block";$("browse").onclick=async()=>{
-  const r=await window.__TAURI__.dialog.open({filters:[{name:"Uygulama",extensions:["exe","lnk","bat","url"]}]});
-  if(r){$("p").value=r;if(!$("n").value)$("n").value=r.split(/[\\/]/).pop().replace(/\.[^.]+$/,"")}}}
-$("lcancel").onclick=()=>$("ldlg").close();
-$("lsave").onclick=()=>{
-  let v=$("lu").value.trim();if(v&&!/^https?:\/\//i.test(v))v="https://"+v;
-  if(v&&!/^https?:\/\/[^\s]+\.[^\s]+/i.test(v)){toast("⚠️ Geçerli bir link gir");return}
-  const a=apps.find(x=>x.id==linkId);if(a){a.url=v;save();render();toast("🔗 "+a.name+" linki kaydedildi")}
-  $("ldlg").close();
+addEventListener("focus",()=>{if(T())refresh()});
+function resetDlg(){editId=null;$("n").value=$("p").value="";$("n").disabled=false;$("c").disabled=false}
+$("add").onclick=()=>{resetDlg();$("dlg").showModal()};
+$("cancel").onclick=()=>{resetDlg();$("dlg").close()};
+$("save").onclick=()=>{
+  const n=$("n").value.trim();if(!n)return;const p=$("p").value.trim();
+  if(editId){const c=S.custom.find(x=>x.id===editId);if(c){c.name=n;c.path=p;c.cat=$("c").value}else S.paths[editId]=p;toast("💾 Kaydedildi")}
+  else{S.custom.push({id:"c"+Date.now(),name:n,icon:{Oyunlar:"🎮",Programlar:"🧩"}[$("c").value]||"🧩",cat:$("c").value,path:p});toast("➕ "+n+" eklendi")}
+  save();resetDlg();$("dlg").close();refresh();
 };
+if(T()){$("browse").style.display="block";$("browse").onclick=async()=>{
+  const r=await T().dialog.open({filters:[{name:"Uygulama",extensions:["exe","lnk","bat","url"]}]});
+  if(r){$("p").value=r;if(!$("n").value)$("n").value=r.split(/[\\/]/).pop().replace(/\.[^.]+$/,"")}}}
 $("grid").addEventListener("click",e=>{const i=e.target.closest(".ico");if(i){pick=i.dataset.i;$("file").click()}});
 $("file").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f||!pick)return;
   const img=new Image(),u=URL.createObjectURL(f);
   img.onload=()=>{const c=document.createElement("canvas");c.width=c.height=96;c.getContext("2d").drawImage(img,0,0,96,96);
-    const a=apps.find(x=>x.id==pick);a.icon=c.toDataURL("image/png");save();render();toast("🖼️ "+a.name+" ikonu güncellendi");URL.revokeObjectURL(u)};
+    S.icons[pick]=c.toDataURL("image/png");save();render();toast("🖼️ İkon güncellendi");URL.revokeObjectURL(u)};
   img.src=u;e.target.value="";
 });
-$("save").onclick=()=>{
-  const n=$("n").value.trim();if(!n)return;
-  const ic={Oyunlar:"🎮",Programlar:"🧩",Altun:"🟡"}[$("c").value];
-  if(editId){const a=apps.find(x=>x.id==editId);a.name=n;a.path=$("p").value;a.cat=$("c").value;editId=null}else apps.push({id:Date.now(),name:n,icon:ic,cat:$("c").value,fav:false,path:$("p").value});
-  save();$("n").value=$("p").value="";$("dlg").close();render();toast("➕ "+n+" eklendi");
-};
-render();
+(async()=>{try{if(T()&&T().app)HUBVER=await T().app.getVersion()}catch(e){}render();await refresh();loadLatest();loadRemote()})();
 </script>
 </body>
 </html>

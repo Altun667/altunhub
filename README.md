@@ -18,8 +18,21 @@ npm run dev                   # geliştirme
 npm run build                 # setup .exe -> src-tauri/target/release/bundle/nsis/
 ```
 
+## Otomatik güncelleme nasıl çalışır?
+- Hub açılınca her uygulamanın GitHub'daki **son release**'ine bakar (AltunDP, AltunSpace, AltunCPU ve AltunHub'ın kendisi).
+- Yeni sürüm varsa kartta **Güncelle** çıkar. Butona basınca release'teki `.exe` / `.msi` / `.zip` indirilir.
+  Kurulum dosyası (adında setup/install geçen) çalıştırılır, taşınabilir exe ise `%LOCALAPPDATA%\AltunHub\apps\` altına konur.
+- Sen sadece GitHub'da yeni tag'li bir release çıkar ve `.exe` dosyasını Assets'e yükle, hub'a dokunmana gerek yok.
+- Release'e dosya yüklemezsen (sadece otomatik kaynak zip'leri olursa) buton sürüm sayfasını açar.
+
+## Liste internetten nasıl güncellenir? (apps.json)
+1. `apps.json` dosyası repoda ana klasörde durur. Yeni sürüm, yeni indirme linki veya yeni uygulama için bu dosyayı düzenle.
+2. `src/index.html` içindeki `const REMOTE=""` satırına dosyanın raw adresini yaz:
+   `https://raw.githubusercontent.com/Altun667/REPO_ADI/main/apps.json`
+3. Bundan sonra kullanıcılar yeni setup indirmeden listeyi otomatik alır.
+
 ## Özelleştirme
-- Uygulama listesi, ikonlar ve sosyal linkler: `src/index.html` (`DEF` listesi).
+- Uygulama listesi, ikonlar ve sosyal linkler: `src/index.html` (`BUILTIN` listesi).
 - Logo: `app-icon.png` dosyasını kendi logonla değiştir.
 
 ## Lisans

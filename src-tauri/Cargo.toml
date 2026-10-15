@@ -1,6 +1,6 @@
 [package]
 name = "altunhub"
-version = "1.0.0"
+version = "1.2.0"
 description = "AltunHub - Altun uygulamalarının merkezi"
 edition = "2021"
 license = "MIT"
