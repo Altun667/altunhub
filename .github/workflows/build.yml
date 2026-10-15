@@ -2,7 +2,7 @@ name: Build AltunHub Setup
 on:
   push:
     branches: [main, master]
-    tags: ["v*"]
+    tags: ["v*", "V*"]
   workflow_dispatch:
 permissions:
   contents: write
