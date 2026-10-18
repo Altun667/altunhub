@@ -18,6 +18,12 @@ npm run dev                   # geliştirme
 npm run build                 # setup .exe -> src-tauri/target/release/bundle/nsis/
 ```
 
+## Yeni uygulama nasıl eklenir? (otomatik)
+1. GitHub'da uygulamanın repo'sunu aç, sağdaki ⚙️ (About) → **Topics** kısmına `altunhub` yaz.
+2. Repo'nun ana klasörüne `icon.png` (olmazsa `icon.ico`) koy, hub ikonu oradan çeker.
+3. Release'e `.exe` / `.zip` yükle. Hub kendiliğinden kartı ve **İndir** butonunu gösterir.
+Liste 15 dakikada bir yenilenir, sol menüdeki **Yenile** ile hemen yenilenir.
+
 ## Otomatik güncelleme nasıl çalışır?
 - Hub açılınca her uygulamanın GitHub'daki **son release**'ine bakar (AltunDP, AltunSpace, AltunCPU ve AltunHub'ın kendisi).
 - Yeni sürüm varsa kartta **Güncelle** çıkar. Butona basınca release'teki `.exe` / `.msi` / `.zip` indirilir.

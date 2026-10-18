@@ -81,6 +81,37 @@ fn find_exe(dir: &Path, name: &str, depth: u8) -> Option<PathBuf> {
     None
 }
 
+fn find_any_exe(dir: &Path, depth: u8) -> Option<PathBuf> {
+    let rd = std::fs::read_dir(dir).ok()?;
+    let mut subs = Vec::new();
+    for e in rd.flatten() {
+        let p = e.path();
+        if p.is_dir() {
+            subs.push(p);
+        } else if p
+            .extension()
+            .map(|x| x.to_string_lossy().eq_ignore_ascii_case("exe"))
+            .unwrap_or(false)
+        {
+            let n = p
+                .file_name()
+                .map(|n| n.to_string_lossy().to_lowercase())
+                .unwrap_or_default();
+            if !n.contains("unins") {
+                return Some(p);
+            }
+        }
+    }
+    if depth > 0 {
+        for s in subs {
+            if let Some(f) = find_any_exe(&s, depth - 1) {
+                return Some(f);
+            }
+        }
+    }
+    None
+}
+
 fn expand_env(s: &str) -> String {
     let mut out = String::new();
     let mut rest = s;
@@ -168,10 +199,9 @@ fn install_blocking(
             &[("AH_ZIP", file_s.as_str()), ("AH_DIR", dir_s.as_str())],
         )
         .map_err(|_| "Zip açılamadı".to_string())?;
-        if exe.is_empty() {
-            return Err("Zip açıldı ama exe adı tanımlı değil".into());
-        }
-        let found = find_exe(&dir, &exe, 3).ok_or_else(|| "Zip içinde exe bulunamadı".to_string())?;
+        let found = find_exe(&dir, &exe, 3)
+            .or_else(|| find_any_exe(&dir, 3))
+            .ok_or_else(|| "Zip içinde exe bulunamadı".to_string())?;
         return Ok(InstallResult {
             kind: "portable".into(),
             path: found.to_string_lossy().to_string(),

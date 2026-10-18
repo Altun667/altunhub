@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AltunHub</title>
 <style>
-:root{--bg:#f4f1ea;--panel:#fff;--panel2:#ece8de;--text:#1d1b16;--mut:#7a7466;--gold:#c8901a;--gold2:#f0b429;--line:#ddd7c8;--red:#d64545;--green:#2e9e5b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0f13;--panel:#171920;--panel2:#1f222b;--text:#ecebe6;--mut:#8b8f9c;--gold:#f0b429;--gold2:#ffd36b;--line:#2a2d38;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0e0f13;--panel:#171920;--panel2:#1f222b;--text:#ecebe6;--mut:#8b8f9c;--gold:#f0b429;--gold2:#ffd36b;--line:#2a2d38;color-scheme:dark}
+:root{--bg:#eef3fa;--panel:#fff;--panel2:#e3ebf6;--text:#14213a;--mut:#62708a;--gold:#1f6feb;--gold2:#3b9bff;--line:#d3deee;--red:#d64545;--green:#2e9e5b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#080d18;--panel:#0f1729;--panel2:#16213a;--text:#e8eefb;--mut:#8493b0;--gold:#2f8cff;--gold2:#5cb2ff;--line:#1f2e4d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#080d18;--panel:#0f1729;--panel2:#16213a;--text:#e8eefb;--mut:#8493b0;--gold:#2f8cff;--gold2:#5cb2ff;--line:#1f2e4d;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh}
@@ -22,9 +22,9 @@ main{padding:20px 24px;min-width:0}
 .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .search{flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:10px 14px;border-radius:10px;font-size:14px;outline:none}
 .search:focus{border-color:var(--gold)}
-.btn{background:var(--gold);color:#1a1405;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px}
+.btn{background:var(--gold);color:#fff;border:0;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px}
 .btn[disabled]{opacity:.5;cursor:default}.btn.ghost{background:var(--panel2);color:var(--text);font-weight:500}
-.banner{background:linear-gradient(90deg,rgba(240,180,41,.18),transparent);border:1px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:14px}
+.banner{background:linear-gradient(90deg,rgba(47,140,255,.2),transparent);border:1px solid var(--gold);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:14px}
 h2{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin:0 0 10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;transition:.15s}
@@ -39,7 +39,7 @@ h2{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;m
 .acts .btn{flex:1;padding:8px}
 .x{all:unset;cursor:pointer;color:var(--mut);padding:0 8px;border-radius:8px;background:var(--panel2);display:grid;place-items:center}
 .x:hover{color:var(--red)}
-.badge{font-size:11px;background:var(--gold);color:#1a1405;border-radius:20px;padding:2px 8px;font-weight:700}
+.badge{font-size:11px;background:var(--gold);color:#fff;border-radius:20px;padding:2px 8px;font-weight:700}
 .empty{color:var(--mut);padding:40px;text-align:center;grid-column:1/-1}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--gold);padding:10px 18px;border-radius:10px;transition:.25s;opacity:0;font-size:14px;z-index:9}
 .toast.show{transform:translateX(-50%);opacity:1}
@@ -94,9 +94,26 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 let S={fav:{},paths:{},icons:{},inst:{},custom:[]};
 try{const s=localStorage.getItem(KEY);if(s)S={...S,...JSON.parse(s)}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-let base=BUILTIN.slice(),F={},LAT={},BUSY={},HUBVER="",cat="Tümü",editId=null,pick=null;
+let base=BUILTIN.slice(),F={},LAT={},NOREL={},BUSY={},HUBVER="",cat="Tümü",editId=null,pick=null,REM=[],DISC=[],ICON={};
 function mergeRemote(list){if(!Array.isArray(list))return;list.forEach(x=>{if(!x||!x.id)return;const i=base.findIndex(b=>b.id===x.id);if(i>=0)base[i]={...base[i],...x};else base.push(x)})}
-try{const r=localStorage.getItem("altunhub.remote");if(r)mergeRemote(JSON.parse(r))}catch(e){}
+try{REM=JSON.parse(localStorage.getItem("altunhub.remote")||"[]")||[]}catch(e){REM=[]}
+try{DISC=JSON.parse(localStorage.getItem("altunhub.disc")||"[]")||[]}catch(e){DISC=[]}
+try{NOREL=JSON.parse(localStorage.getItem("altunhub.norel")||"{}")||{}}catch(e){NOREL={}}
+const ICONMAP={altunlink:"icons/altunlink.png",altunsound:"icons/altunsound.png",altunsounds:"icons/altunsound.png",altuncontroller:"icons/altuncontroller.png",altuncontrol:"icons/altuncontroller.png",altunlauncher:"icons/altunlauncher.png"};
+function rebuild(){
+  base=BUILTIN.slice();mergeRemote(REM);
+  const names=new Set(DISC.map(d=>d.name.toLowerCase()));
+  base=base.filter(b=>!(b.soon&&names.has(String(b.name).toLowerCase())));
+  const have=new Set(base.map(b=>String(b.repo||"").toLowerCase()));
+  DISC.forEach(d=>{
+    if(have.has(d.repo.toLowerCase()))return;
+    const m=ICONMAP[d.name.toLowerCase()];
+    base.push({id:d.id,name:d.name,desc:d.desc,cat:"Altun",repo:d.repo,exe:d.name+".exe",fav:false,disc:!m,
+      icon:m||"https://raw.githubusercontent.com/"+d.repo+"/"+d.branch+"/icon.png",
+      cand:["%LOCALAPPDATA%\\Programs\\"+d.name+"\\"+d.name+".exe","%ProgramFiles%\\"+d.name+"\\"+d.name+".exe"]});
+  });
+}
+rebuild();
 try{const l=localStorage.getItem("altunhub.latest");if(l)LAT=JSON.parse(l)||{}}catch(e){}
 const favOf=o=>S.fav[o.id]!==undefined?S.fav[o.id]:!!o.fav;
 const all=()=>[
@@ -127,11 +144,30 @@ async function fetchLatest(repo){
 }
 async function loadLatest(){
   const items=[...base.filter(b=>b.repo),HUB];
-  await Promise.all(items.map(async b=>{try{LAT[b.id]=await fetchLatest(b.repo)}catch(e){}}));
-  try{localStorage.setItem("altunhub.latest",JSON.stringify(LAT))}catch(e){}
+  await Promise.all(items.map(async b=>{try{LAT[b.id]=await fetchLatest(b.repo);delete NOREL[b.id]}catch(e){if(String(e&&e.message)==="404")NOREL[b.id]=true}}));
+  try{localStorage.setItem("altunhub.latest",JSON.stringify(LAT));localStorage.setItem("altunhub.norel",JSON.stringify(NOREL))}catch(e){}
   settle();render();
 }
-async function loadRemote(){try{const r=await fetch(REMOTE+"?t="+Date.now());if(!r.ok)return;const j=await r.json();try{localStorage.setItem("altunhub.remote",JSON.stringify(j))}catch(e){}mergeRemote(j);await refresh();loadLatest()}catch(e){}}
+async function loadRemote(){try{const r=await fetch(REMOTE+"?t="+Date.now());if(!r.ok)return;const j=await r.json();REM=Array.isArray(j)?j:[];try{localStorage.setItem("altunhub.remote",JSON.stringify(REM))}catch(e){}rebuild()}catch(e){}}
+const OWNER="Altun667",TTL=15*60*1000;
+const stale=()=>{try{return Date.now()-Number(localStorage.getItem("altunhub.ts")||0)>TTL}catch(e){return true}};
+async function discover(){
+  const r=await fetch("https://api.github.com/users/"+OWNER+"/repos?per_page=100&sort=updated",{headers:{Accept:"application/vnd.github+json"}});
+  if(!r.ok)throw new Error(r.status);
+  const j=await r.json();
+  DISC=j.filter(x=>x&&!x.fork&&!x.archived&&(x.topics||[]).includes("altunhub")&&x.name.toLowerCase()!==HUB.repo.split("/")[1].toLowerCase())
+    .map(x=>({id:"gh-"+x.name.toLowerCase(),name:x.name,repo:x.full_name,desc:x.description||"",branch:x.default_branch||"main"}));
+  try{localStorage.setItem("altunhub.disc",JSON.stringify(DISC))}catch(e){}
+  rebuild();
+}
+async function syncAll(force){
+  if(!force&&!stale())return true;
+  let ok=true;
+  try{await discover()}catch(e){ok=false}
+  await refresh();await loadLatest();
+  if(ok){try{localStorage.setItem("altunhub.ts",String(Date.now()))}catch(e){}}
+  return ok;
+}
 async function install(a){
   const L=LAT[a.id];
   if(!L){openUrl(a.dl);return}
@@ -147,11 +183,19 @@ async function install(a){
   }catch(e){toast("⚠️ "+e+" (uygulama açıksa kapatıp tekrar dene)")}
   BUSY[a.id]=false;await refresh();
 }
+function iconHtml(a){
+  let ic=String(a.icon);
+  if(a.disc&&!ic.startsWith("data:")){const st=ICON[a.id];if(st==="none")return "🧩";if(st==="ico")ic=ic.replace(/icon\.png$/,"icon.ico");return '<img src="'+esc(ic)+'" data-ic="'+esc(a.id)+'">'}
+  if(/^(data:image\/|icons\/)/.test(ic))return '<img src="'+esc(ic)+'">';
+  return esc(ic);
+}
+addEventListener("error",e=>{const t=e.target;if(!t||t.tagName!=="IMG"||!t.dataset.ic)return;const id=t.dataset.ic;
+  if(ICON[id]!=="ico"){ICON[id]="ico";t.src=t.src.replace(/icon\.png$/,"icon.ico")}else{ICON[id]="none";t.replaceWith(document.createTextNode("🧩"))}},true);
 function meta(a){
   if(a.cat==="Sosyal"){try{return esc(new URL(a.url).host.replace(/^www\./,""))}catch(e){return "Sosyal"}}
   if(a.soon)return "Yakında";
   if(isExt(a)){const L=LAT[a.id];
-    if(!F[a.id])return L?esc(L.tag)+" · Kurulu değil":"Kurulu değil";
+    if(!F[a.id])return L?esc(L.tag)+" · Kurulu değil":(NOREL[a.id]?"Yakında":"Kurulu değil");
     return hasUpdate(a)?esc(S.inst[a.id])+" → "+esc(L.tag):"Kurulu · "+esc(S.inst[a.id]||"")}
   return esc(a.cat);
 }
@@ -160,6 +204,7 @@ function actions(a){
   if(a.cat==="Sosyal")return `<button class="btn" data-o="${id}">Aç</button>`;
   if(a.soon)return `<button class="btn ghost" disabled>Yakında</button>`;
   if(isExt(a)){
+    if(!F[a.id]&&NOREL[a.id]&&!LAT[a.id])return `<button class="btn ghost" disabled>Yakında</button>`+ed;
     if(BUSY[a.id])return `<button class="btn" disabled>İndiriliyor…</button>`;
     if(!F[a.id])return `<button class="btn" data-up="${id}">${LAT[a.id]?"İndir":"Sürümler"}</button>`+ed;
     return `<button class="btn" data-o="${id}">Aç</button>`+(hasUpdate(a)?`<button class="btn ghost" data-up="${id}">Güncelle</button>`:"")+ed;
@@ -178,12 +223,12 @@ function render(){
   $("side").innerHTML='<div class="logo"><img src="icons/hub.png" alt="">AltunHub</div>'+cats.map(c=>{
     const n=c==="Tümü"?list0.length:c==="Favoriler"?list0.filter(a=>a.fav).length:list0.filter(a=>a.cat===c).length;
     return `<button class="nav ${c===cat?"on":""}" data-c="${c}"><span>${c}</span><span>${n}</span></button>`}).join("")+
-    '<div class="sp"></div><button class="nav" id="theme">🌓 Tema</button>';
+    '<div class="sp"></div><button class="nav" id="reload">🔄 Yenile</button><button class="nav" id="theme">🌓 Tema</button>';
   $("title").textContent=cat;$("banner").innerHTML=banner();
   const list=list0.filter(a=>(cat==="Tümü"||(cat==="Favoriler"?a.fav:a.cat===cat))&&a.name.toLowerCase().includes(q));
   $("grid").innerHTML=list.length?list.map(a=>`<div class="card">
-    <div class="row"><div class="ico" data-i="${esc(a.id)}" title="İkonu değiştir">${/^(data:image\/|icons\/)/.test(String(a.icon))?'<img src="'+esc(a.icon)+'">':esc(a.icon)}</div>
-    <div><div class="nm">${esc(a.name)}</div><div class="meta">${meta(a)}</div></div>
+    <div class="row"><div class="ico" data-i="${esc(a.id)}" title="İkonu değiştir">${iconHtml(a)}</div>
+    <div><div class="nm" title="${esc(a.desc||"")}">${esc(a.name)}</div><div class="meta">${meta(a)}</div></div>
     <button class="star ${a.fav?"on":""}" data-f="${esc(a.id)}">★</button></div>
     ${isExt(a)&&hasUpdate(a)?'<span class="badge" style="align-self:flex-start">Güncelleme var</span>':""}
     <div class="acts">${actions(a)}</div></div>`).join(""):'<div class="empty">Burada henüz bir şey yok. “+ Ekle” ile oyun veya program ekleyebilirsin.</div>';
@@ -203,6 +248,7 @@ document.addEventListener("click",e=>{
   else if(d.hub){install({...HUB,dl:"https://github.com/"+HUB.repo+"/releases/latest"});return}
   else if(d.e){const a=find(d.e);editId=a.id;$("n").value=a.name;$("n").disabled=!a.custom;$("p").value=a.path||"";$("c").value=a.custom?a.cat:"Programlar";$("c").disabled=!a.custom;$("dlg").showModal();return}
   else if(d.d){S.custom=S.custom.filter(a=>a.id!==d.d);save()}
+  else if(t.id==="reload"){toast("🔄 GitHub'dan yenileniyor…");syncAll(true).then(ok=>toast(ok?"✅ Liste güncellendi":"⚠️ GitHub'a ulaşılamadı, biraz sonra tekrar dene"));return}
   else if(t.id==="theme"){const r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";r.dataset.theme=dark?"light":"dark"}
   render();
 });
@@ -229,7 +275,7 @@ $("file").addEventListener("change",e=>{
     S.icons[pick]=c.toDataURL("image/png");save();render();toast("🖼️ İkon güncellendi");URL.revokeObjectURL(u)};
   img.src=u;e.target.value="";
 });
-(async()=>{try{if(T()&&T().app)HUBVER=await T().app.getVersion()}catch(e){}render();await refresh();loadLatest();loadRemote()})();
+(async()=>{try{if(T()&&T().app)HUBVER=await T().app.getVersion()}catch(e){}render();await refresh();await loadRemote();await syncAll(false);render()})();
 </script>
 </body>
 </html>
