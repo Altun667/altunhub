@@ -1,6 +1,6 @@
 {
   "name": "altunhub",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "private": true,
   "license": "MIT",
   "scripts": { "tauri": "tauri", "dev": "tauri dev", "build": "tauri build" },

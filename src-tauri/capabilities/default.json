@@ -2,5 +2,5 @@
   "identifier": "default",
   "description": "AltunHub ana pencere izinleri",
   "windows": ["main"],
-  "permissions": ["core:default", "dialog:default"]
+  "permissions": ["core:default", "dialog:default", "notification:default", "autostart:default"]
 }

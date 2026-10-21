@@ -1,1 +1,4 @@
-[]
+[
+  {"id":"discord","name":"Discord","icon":"💬","cat":"Sosyal","url":"https://discord.gg/wqNRGpARvA"},
+  {"id":"support","name":"Destek / Support","icon":"❤️","cat":"Sosyal","url":"https://donate.bynogame.com/altun67"}
+]
